@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#100b1b"><meta name="description" content="A neon multiplayer survival party game. Read the rule, dodge the traps, and outlast your friends.">
+<title>DON’T GET CAUGHT!</title>
+<link rel="icon" href="/ghost.svg"><link rel="manifest" href="/game.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&amp;family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="shell">
+<header class="top"><button class="brand" data-page="play"><img src="/ghost.svg" alt=""><span>DON’T GET <b>CAUGHT!</b></span></button><div class="topright"><span id="status" class="status">Connecting</span><span id="coins" class="wallet">◈ <b>0</b></span><button class="account" data-page="profile" aria-label="Player profile"><img src="/ghost.svg" alt=""></button></div></header>
+<aside class="side" aria-label="Main navigation"><div class="nav-heading">ARENA</div>
+<nav id="nav">
+<button data-page="play" class="active"><span data-icon="gamepad"></span>Play</button>
+<button data-page="leaderboard"><span data-icon="trophy"></span>Leaderboards</button>
+<button data-page="locker"><span data-icon="shirt"></span>Locker</button>
+<button data-page="missions"><span data-icon="target"></span>Missions</button>
+<button data-page="profile"><span data-icon="user"></span>Profile</button>
+</nav><div class="sidebar-bottom"><button data-page="settings"><span data-icon="settings"></span>Settings</button><div class="rankbox"><span class="rank-icon" data-icon="shield"></span><div><strong id="rank">Rookie</strong><small id="level">Level 1</small></div></div></div></aside>
+<main id="main">
+<section id="home">
+<div id="announcement" class="announcement" hidden></div>
+<div class="hero">
+<div class="hero-content"><div class="eyebrow"><i></i> THE SURVIVAL PARTY GAME</div>
+<h1>DON’T GET<br><em>CAUGHT!</em></h1>
+<p>New rules. Deadly traps. One survivor.<br>Think fast, move faster.</p>
+<div class="hero-actions"><button class="primary" data-action="quick"><span data-icon="play"></span> Quick Play</button><button class="secondary" data-action="solo"><span data-icon="cpu"></span> Solo Training</button></div></div>
+</div>
+<div class="section-head"><div><h2>GAME MODES</h2><p>Pick your kind of chaos.</p></div><button class="link" data-action="book"><span data-icon="book"></span> How to play</button></div>
+<div id="modes" class="mode-grid"></div>
+<div id="events" hidden></div>
+<div class="section-head"><div><h2>PLAY WITH FRIENDS</h2><p>Send the code. Settle the score.</p></div></div>
+<div class="room-grid"><button class="room-tile" data-action="create"><span class="tileicon pink" data-icon="users"></span><span><strong>Private Room</strong><small>Create an invite-only arena</small></span><span data-icon="plus"></span></button><button class="room-tile" data-action="join"><span class="tileicon cyan" data-icon="key"></span><span><strong>Join with Code</strong><small>Play or spectate in a room</small></span><span data-icon="enter"></span></button></div>
+</section>
+<section id="page" hidden></section>
+<section id="room" hidden></section>
+<section id="match" hidden>
+<div class="match-head"><div><div class="eyebrow" id="round-label">ROUND 1</div><h2 id="challenge-name">Loading arena</h2><p id="tip"></p></div><div class="match-right"><strong id="timer">0:00</strong><button class="icon-btn" data-action="fullscreen" aria-label="Fullscreen" data-icon="expand"></button><button class="icon-btn" data-action="exit" aria-label="Leave match" data-icon="x"></button></div></div>
+<div class="arena"><canvas id="arena" width="960" height="540" aria-label="Live game arena"></canvas><div id="arena-text" class="arena-text"></div></div>
+<div class="match-tools"><span id="alive"></span><span id="health"></span><span id="connection"></span><button class="secondary vote" data-action="vote" hidden>Vote <kbd>E</kbd></button></div>
+<div class="match-input"><div class="dpad" aria-label="Touch movement"><button class="up" data-move="up" aria-label="Move up">▲</button><button data-move="left" aria-label="Move left">◀</button><button data-move="down" aria-label="Move down">▼</button><button data-move="right" aria-label="Move right">▶</button></div><div id="reactions" class="reactions" aria-label="Reactions"></div></div>
+<div id="result" class="result" hidden></div>
+</section>
+<footer><span>DON’T GET CAUGHT!</span><button class="link" data-action="book">Controls &amp; rules</button></footer>
+</main>
+</div>
+<dialog id="dialog"><div class="dialog-head"><h2 id="dialog-title"></h2><button class="icon-btn" data-action="close" aria-label="Close" data-icon="x"></button></div><div id="dialog-body"></div></dialog>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+<script type="module" src="/app.js"></script>
+</body>
+</html>

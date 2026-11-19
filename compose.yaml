@@ -1,0 +1,35 @@
+services:
+  arena:
+    build: .
+    restart: unless-stopped
+    environment:
+      PUBLIC_ORIGIN: https://${GAME_DOMAIN:?Set GAME_DOMAIN}
+      TRUST_PROXY: "1"
+      ADMIN_KEY: ${ADMIN_KEY:-}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      STRIPE_CURRENCY: ${STRIPE_CURRENCY:-usd}
+      PREMIUM_AMOUNT: ${PREMIUM_AMOUNT:-399}
+      PASS_AMOUNT: ${PASS_AMOUNT:-599}
+    volumes:
+      - arena_data:/data
+  edge:
+    image: caddy:2.10-alpine
+    restart: unless-stopped
+    environment:
+      GAME_DOMAIN: ${GAME_DOMAIN:?Set GAME_DOMAIN}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - edge_data:/data
+      - edge_config:/config
+    depends_on:
+      arena:
+        condition: service_healthy
+volumes:
+  arena_data:
+  edge_data:
+  edge_config:
