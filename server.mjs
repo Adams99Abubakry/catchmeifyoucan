@@ -21,9 +21,10 @@ const season=()=>daily().slice(0,7);
 const settings=['announcement','tournament','disabledModes','cosmeticPrices','disabledChallenges'];
 const mime={html:'text/html; charset=utf-8',css:'text/css',js:'text/javascript',svg:'image/svg+xml',webp:'image/webp',png:'image/png',webmanifest:'application/manifest+json'};
 const root=new URL('./public/',import.meta.url);
+const onVercel=process.env.VERCEL==='1';
 function requestOrigin(req){
  const host=process.env.TRUST_PROXY==='1'?(req.headers['x-forwarded-host']||req.headers.host):req.headers.host;
- const https=process.env.TRUST_PROXY==='1'&&req.headers['x-forwarded-proto']==='https';
+ const https=onVercel||process.env.TRUST_PROXY==='1'&&req.headers['x-forwarded-proto']==='https';
  return process.env.PUBLIC_ORIGIN||`${https?'https':'http'}://${host}`;
 }
 const clean=s=>String(s??'').trim();
@@ -37,7 +38,7 @@ async function body(req){
  const raw=await rawBody(req);
  try {const b=JSON.parse(raw);if(!b||Array.isArray(b)||typeof b!=='object')throw Error();return b;}catch{fail('Invalid request');}
 }
-export function createApp({database=process.env.DB_PATH||'game.sqlite',origin=process.env.PUBLIC_ORIGIN,adminKey=process.env.ADMIN_KEY,clock=Date.now}={}){
+export function createApp({database=process.env.DB_PATH||(onVercel?'/tmp/dgc-game.sqlite':'game.sqlite'),origin=process.env.PUBLIC_ORIGIN,adminKey=process.env.ADMIN_KEY,clock=Date.now}={}){
  const shop=commerce(process.env,origin);
  const db=new DatabaseSync(database);
  db.exec('PRAGMA foreign_keys=ON; PRAGMA journal_mode=WAL; PRAGMA busy_timeout=5000; CREATE TABLE IF NOT EXISTS schema_version(version TEXT PRIMARY KEY);');
@@ -62,7 +63,7 @@ export function createApp({database=process.env.DB_PATH||'game.sqlite',origin=pr
  function issue(res,id){
   const token=randomBytes(32).toString('hex'),ttl=30*86400;
   run('INSERT INTO sessions VALUES (?,?,?)',hash(token),id,Date.now()+ttl*1000);
-  res.setHeader('Set-Cookie',`dgc=${token}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${ttl}${origin?.startsWith('https:')?'; Secure':''}`);
+  res.setHeader('Set-Cookie',`dgc=${token}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${ttl}${onVercel||origin?.startsWith('https:')?'; Secure':''}`);
  }
  function profile(id){
   const {name,country,xp,coins,skin,accessory,email}=user(id);
@@ -381,7 +382,9 @@ export function createApp({database=process.env.DB_PATH||'game.sqlite',origin=pr
  server.on('close',()=>{clearInterval(loop);clearInterval(heartbeat);for(const ws of wss.clients)ws.terminate();wss.close();db.close();});
  return server;
 }
-if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
+export default onVercel?createApp():null;
+
+if(!onVercel&&process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
  const arg=name=>{const index=process.argv.indexOf(name);return index<0?undefined:process.argv[index+1];};
  const server=createApp();server.listen(Number(process.env.PORT||arg('--port')||3000),arg('--host')||'0.0.0.0',()=>console.log('Arena listening on port '+server.address().port));
  const close=()=>{server.close();setTimeout(()=>process.exit(0),3000).unref();};
